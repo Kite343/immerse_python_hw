@@ -24,18 +24,33 @@ MAX_PRICE_POP = 600
 # внесение
 def add_money(sum, n):    
     sum = tax_wealth(sum)
+    print(f"Ваш баланс {sum}")
 
-    count = count_money()
-    sum += count * NOMINAL
+    count = 0
+    while True:
+        count = input(f"Введите сумму кратную {NOMINAL} у.е.\n")
+        if count.isdigit() and (int(count) % 50 == 0):
+            count = int(count)
+            break
+    sum += count
     if n % NUMBER_OPERATION == 0:
+        print("Вам начислены проценты")
         sum *= (1 + BET)
+    print(f"Ваш баланс {sum}")
     return sum
 
 # снятие
 def pop_money(sum, n):
     sum = tax_wealth(sum)
 
-    count = count_money()
+    print(f"Ваш баланс {sum}")
+
+    count = 0
+    while True:
+        count = input(f"Введите нужную сумму\n")
+        if count.isdigit():
+            count = int(count) 
+            break
     sum_percent_pop = count * NOMINAL * PERCENT_POP
     
     if sum_percent_pop < MIN_PRICE_POP:
@@ -50,8 +65,12 @@ def pop_money(sum, n):
     else:
         sum -= sum_pop
 
+    print(f"Ваш баланс {sum}")
+
     if n % NUMBER_OPERATION == 0:
         sum *= (1 + BET)
+        print("Вам начислены проценты")
+        print(f"Ваш баланс {sum}")
     return sum
 
 # налог на богатство
@@ -74,13 +93,6 @@ def choose_action():
         else:
             print("Введите номер нужной операции (это должно быть число)")
 
-# количество денег для внесения или снятия
-def count_money():
-    while True:
-        count = input(f"Введите необходтмое количество купюр по {NOMINAL} у.е.\n")
-        if count.isdigit(): return int(count)
-
-
 # программа
 sum_user = 0
 start = True
@@ -96,6 +108,7 @@ while start:
             sum_user = pop_money(sum_user, operation_count)
         case '3':
             sum_user = tax_wealth(sum_user)
+            print(f"Ваш баланс {sum_user}")
             start = False
-    print(sum_user)
+    # print(f"Ваш баланс {sum_user}")
 
