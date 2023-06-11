@@ -18,7 +18,9 @@
 #     "аптечка": 400, "книга": 300,
 # }
 
-# Перебрать все варианты "вручную" пока не удалось
+# решение с модулем выдает больше вариантов
+from itertools import combinations
+
 
 my_things = {
     "спальник": 1000, "палатка": 4000,
@@ -34,30 +36,32 @@ print(sum(my_things.values()))
 
 weight = int(input("Введите грузоподъемность рюкзака в граммах\n"))
 
-variants = []
 things_name = [*my_things.keys()]
-n = len(things_name) - 1
-# берем 1 вещь и к ней прибавляем другие, пока не достигнем максимума не привышающего нужный вес
-# каждый цикл первая положенная вещь меняется
-# каждую итерацию (второй цикл) меняем порядок добавления вещей (делаем сдвиг), чтобы перебрать разные варианты
-for thing in things_name:
-    if my_things[thing] > weight:
-        continue
-    temp_var = {thing,}
-    temp = things_name.copy()
-    temp.remove(thing)
-    sum_things = my_things[thing] 
-    for _ in range(n):
-        temp.append(temp.pop(0))                      # меняем порядок остальной части списка
-        for el in temp:
+variants = []
+for n in range(1, len(things_name) + 1):
+    temp_compinats = combinations(things_name, n)
+    for var in temp_compinats:
+        sum_things = 0
+        temp_var = set()
+        for el in var:
             if sum_things + my_things[el] > weight:     # если сумма с добавление вещи превысит лимит, то 
                 continue
             sum_things += my_things[el]
             temp_var.add(el)
         if temp_var not in variants:          # полученное до этого множество добавляем в список вариантов (если его там еще нет)
             variants.append(temp_var)
-        temp_var = {thing,}
-        sum_things = my_things[thing] 
+
+# проверим являются ли варианты подмножествами других вариантов, если да, то удалим эти варианты
+i = 0
+while i < len(variants):
+    for j in range(0, len(variants)):
+        if i == j:
+            continue
+        if variants[i] < variants[j]:
+            variants.pop(i)
+            break
+    else:
+        i += 1
     
 print(f"Количество полученных вариантов: {len(variants)}")   
 print() 
