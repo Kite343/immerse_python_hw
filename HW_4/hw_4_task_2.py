@@ -6,7 +6,7 @@
 def func(**args):
     res = {}
     for k, v in args.items():
-        if type(v) in (list, dict, set, bytearray):
+        if v.__hash__ == None :
             v = str(v)
         res[v] = k
     return res
