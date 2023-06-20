@@ -9,6 +9,6 @@ names = ["Max", "Alex", "Olga", "Ann", "Tom"]
 salary = [20_000, 30_000, 20_000, 30_000, 50_000]
 percent = ["10%", "10%", "20%", "20%", "10%"]
 
-bonus = {n: s * (int(p[: -1]) / 100) for n, s, p in zip(names, salary, percent)}
+bonus = {n: s * (int(p[:-1]) / 100) for n, s, p in zip(names, salary, percent)}
 
 print(bonus)
