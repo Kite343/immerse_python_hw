@@ -34,11 +34,12 @@ def dir_info(dir_, dir_res):
     for folder in os.walk(dir_, topdown=False):
         # имя родительской папки
         parent_fold = folder[0].rsplit("\\", 1)[-1]
-        # sum - для подсчета размера папки
         sum = 0
 
         # проходимся по файлам и записываем их данные
         # размер файла добавляем в сумму для определения размера папки
+        # у файлов можно сразу записывать только имя раодительской папки
+        # а не весь путь, т.к. больше мы к ним обращаться не будем
         for file in folder[2]:
             size = os.path.getsize(f'{folder[0]}\\{file}')
             sum += size
@@ -56,19 +57,26 @@ def dir_info(dir_, dir_res):
                 # если объект из записанных имеет тоже имя, что и дочерняя папка
                 # и родителем является рассматриваемая папка (на случай одинаковых имен папок в разных папках)
                 #  то добавляем её размер в сумму
-                if obj['object'] == fold and obj['parent'] == parent_fold:
+                if obj['object'] == fold and obj['parent'] == folder[0]:
                     sum += obj['size']
 
         # добавляем саму родительскую папку как объект
-        parent = folder[0].rsplit("\\", 2)
-        res.append({'object': parent_fold,
-                    # 'parent': folder[0].rsplit("\\", 2)[-2],
+        # в качестве родительской папки записываем весь путь,
+        # чтобы при подсчете размера папки (выше код)
+        # исключить папки находящиеся в разных папках, но имеющих одинковые названия и подпапки
+        parent = folder[0].rsplit("\\", 1)
+        res.append({'object': folder[0].rsplit("\\", 1)[-1],
                     'parent': None if len(parent) == 1 else parent[-2],
                     'type_obj': 'folder',
                     'size': sum}) 
+    
+    # оставим только имя родительской папки у папок (почистим)
+    for obj in res:
+        if obj['type_obj'] == 'folder' and obj['parent']:
+            obj['parent'] = obj['parent'].rsplit("\\", 1)[-1]
 
     # Запишем результат в файлы разных типов
-    name_file = "res_" + dir_.rsplit("\\", 1)[-1]
+    name_file = "res1_" + dir_.rsplit("\\", 1)[-1]
     save_data_in_files(res, dir_res, name_file)
     
     
@@ -76,3 +84,8 @@ def dir_info(dir_, dir_res):
 if __name__ == '__main__':
     dir_info("HW_8\\files", "HW_8\\hw_res")
     dir_info("HW_8", "HW_8\\hw_res")
+
+
+# при большом количестве и глубине папок и файлов, такой код бцдет работать быстрее,
+# чем для каждой папки проходится опять по всем папкам и фалам, для подсчета размера папки
+# мы используем для этого уже ранее полученную информацию
